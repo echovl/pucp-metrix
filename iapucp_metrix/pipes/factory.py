@@ -6,7 +6,6 @@ from iapucp_metrix.pipes.adversative_connectives_tagger import (
     AdversativeConnectivesTagger,
 )
 from iapucp_metrix.pipes.alphanumeric_word_identifier import AlphanumericWordIdentifier
-from iapucp_metrix.pipes.positive_connectives_tagger import PositiveConnectivesTagger
 from iapucp_metrix.pipes.causal_connectives_tagger import CausalConnectivesTagger
 from iapucp_metrix.pipes.cohesion_words_tokenizer import CohesionWordsTokenizer
 from iapucp_metrix.pipes.content_word_identifier import ContentWordIdentifier
@@ -292,43 +291,6 @@ def create_es_syntactic_pattern_density_indices(
     """
     return SyntacticPatternDensityIndices(nlp)
 
-@Spanish.factory("positive_connectives_tagger")
-def create_es_positiveg_connectives_tagger(
-    nlp: Language, name: str
-) -> PositiveConnectivesTagger:
-    """
-    Function that creates positiveg connective tagger pipe.
-
-    Paramters:
-    nlp(Language): Spacy model that will be used for the pipeline.
-    name(str): Name of the pipe.
-
-    Returns:
-    PositiveConnectivesTagger: The pipe that tags the positiveg connectives.
-    """
-    return PositiveConnectivesTagger(
-        nlp,
-        [
-            "por",
-            "porque",
-            "a causa de",
-            "puesto que",
-            "con motivo de",
-            "pues",
-            "ya que",
-            "conque",
-            "luego",
-            "pues",
-            "por consiguiente",
-            "así que",
-            "en consecuencia",
-            "de manera que",
-            "tan",
-            "tanto que",
-            "por lo tanto",
-            "de modo que",
-        ],
-    )
 
 @Spanish.factory("causal_connectives_tagger")
 def create_es_causal_connectives_tagger(
