@@ -35,6 +35,8 @@ class Syllablelizer:
         self._dic = pyphen.Pyphen(lang="es")
         Token.set_extension("syllables", default=[], force=True)
         Token.set_extension("syllable_count", default=0)
+        Doc.set_extension("syllable_count", default=0)
+        Doc.set_extension("polysyllabic_words_count", default=0)
 
     def __call__(self, doc: Doc) -> Doc:
         """
@@ -49,6 +51,9 @@ class Syllablelizer:
         for token in doc._.alpha_words:  # Iterate every token
             token._.syllables = self._dic.inserted(token.text).split("-")
             token._.syllable_count = len(token._.syllables)
+            doc._.syllable_count += token._.syllable_count
+
+            if token._.syllable_count >= 3:
+                doc._.polysyllabic_words_count += 1
 
         return doc
-
