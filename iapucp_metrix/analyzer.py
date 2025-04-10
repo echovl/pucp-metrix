@@ -34,6 +34,7 @@ class Analyzer:
         self._nlp.add_pipe("connective_indices")
         self._nlp.add_pipe("cohesion_words_tokenizer")
         self._nlp.add_pipe("referential_cohesion_indices")
+        self._nlp.add_pipe("semantic_cohesion_indices")
         self._nlp.add_pipe("informative_word_tagger")
         self._nlp.add_pipe("word_information_indices")
         self._nlp.add_pipe("wrapper_serializer", last=True)

@@ -274,5 +274,4 @@ class InformativeWordTagger:
             doc._.pronouns_plural_second_person_count += sent._.pronouns_plural_second_person_count
             doc._.pronouns_singular_third_person_count += sent._.pronouns_singular_third_person_count
             doc._.pronouns_plural_third_person_count += sent._.pronouns_plural_third_person_count
-
         return doc

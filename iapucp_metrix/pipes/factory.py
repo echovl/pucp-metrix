@@ -18,6 +18,9 @@ from iapucp_metrix.pipes.indices.readability_indices import ReadabilityIndices
 from iapucp_metrix.pipes.indices.referential_cohesion_indices import (
     ReferentialCohesionIndices,
 )
+from iapucp_metrix.pipes.indices.semantic_cohesion_indices import (
+    SemanticCohesionIndices,
+)
 from iapucp_metrix.pipes.indices.syntactic_complexity_indices import (
     SyntacticComplexityIndices,
 )
@@ -519,6 +522,25 @@ def create_es_referential_cohesion_indices(
         analyze_stem_overlap,
         analyze_content_word_overlap,
         analyze_anaphore_overlap,
+    )
+
+
+@Spanish.factory("semantic_cohesion_indices")
+def create_es_semantic_cohesion_indices(
+    nlp: Language, name: str
+) -> SemanticCohesionIndices:
+    """
+    Function that creates semantic cohesion pipe.
+
+    Paramters:
+    nlp(Language): Spacy model that will be used for the pipeline.
+    name(str): Name of the pipe.
+
+    Returns:
+    SemanticCohesionIndices: The pipe that calculates the referential cohesion indices.
+    """
+    return SemanticCohesionIndices(
+        nlp,
     )
 
 

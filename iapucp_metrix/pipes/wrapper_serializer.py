@@ -29,7 +29,7 @@ class WrapperSerializer:
             **doc._.lexical_diversity_indices,
             **doc._.readability_indices,
             **doc._.referential_cohesion_indices,
+            **doc._.semantic_cohesion_indices,
         }
 
         return doc_new
-
