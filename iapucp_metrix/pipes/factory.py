@@ -27,6 +27,9 @@ from iapucp_metrix.pipes.indices.syntactic_complexity_indices import (
 from iapucp_metrix.pipes.indices.syntactic_pattern_density_indices import (
     SyntacticPatternDensityIndices,
 )
+from iapucp_metrix.pipes.indices.textual_simplicity_indices import (
+    TextualSimplicityIndices,
+)
 from iapucp_metrix.pipes.indices.word_information_indices import WordInformationIndices
 from iapucp_metrix.pipes.informative_word_tagger import InformativeWordTagger
 from iapucp_metrix.pipes.logical_connectives_tagger import LogicalConnectivesTagger
@@ -540,6 +543,25 @@ def create_es_semantic_cohesion_indices(
     SemanticCohesionIndices: The pipe that calculates the referential cohesion indices.
     """
     return SemanticCohesionIndices(
+        nlp,
+    )
+
+
+@Spanish.factory("textual_simplicity_indices")
+def create_es_textual_simplicity_indices(
+    nlp: Language, name: str
+) -> TextualSimplicityIndices:
+    """
+    Function that creates textual simplicity pipe.
+
+    Paramters:
+    nlp(Language): Spacy model that will be used for the pipeline.
+    name(str): Name of the pipe.
+
+    Returns:
+    TextualSimplicityIndices: The pipe that calculates the textual simplicity indices.
+    """
+    return TextualSimplicityIndices(
         nlp,
     )
 

@@ -1,9 +1,8 @@
-import nltk
+from datasets import load_dataset
 from gensim import corpora
 from gensim.corpora import Dictionary
 from gensim.matutils import cossim
 from gensim.models import LsiModel
-from nltk.corpus import cess_esp
 from spacy.language import Language
 from spacy.tokens import Doc, Span
 
@@ -59,19 +58,31 @@ class LsaModel:
         Returns:
         None.
         """
-        nltk.download("cess_esp")
+        dataset = load_dataset("crscardellino/spanish_billion_words")
 
-        # Load the CESS-ESP corpus and preprocess the texts
-        documents = [
-            self.preprocess_text(" ".join(words)) for words in cess_esp.sents()
-        ]
+        print("Loading the corpus and preprocessing the texts")
+
+        # Load the corpus and preprocess the texts
+        texts = [data["text"] for data in dataset["train"]]
+
+        print("Number of documents", len(texts))
+
+        documents = self.preprocess_text_batch(texts)
+
+        # documents = [
+        #     self.preprocess_text(" ".join(words)) for words in cess_esp.sents()
+        # ]
 
         self._dictionary = corpora.Dictionary(documents)
 
         # Convert the processed documents into BoW format (Bag-of-Words)
         corpus = [self._dictionary.doc2bow(doc) for doc in documents]
 
+        print("Training the LSA model")
+
         self._model = LsiModel(corpus, id2word=self._dictionary, num_topics=400)
+
+        print("Saving the LSA model and dictionary")
 
         self._model.save("lsa_model.gensim")
         self._dictionary.save("lsa_dictionary.gensim")
@@ -92,6 +103,29 @@ class LsaModel:
             for token in doc
             if token.is_alpha and not token.is_stop
         ]
+
+    def preprocess_text_batch(self, texts: list[str]) -> list[list[str]]:
+        """
+        This method will preprocess a list of texts to remove stop words and punctuation.
+
+        Parameters:
+        texts(list[str]): List of texts to preprocess.
+
+        Returns:
+        list[list[str]]: List of lists of tokens
+        """
+        docs = self._nlp.pipe(texts, n_process=8)
+        tokens = []
+        for doc in docs:
+            tokens.append(
+                [
+                    token.lemma_.lower()
+                    for token in doc
+                    if token.is_alpha and not token.is_stop
+                ]
+            )
+
+        return tokens
 
     def preprocess_doc(self, doc: Doc | Span) -> list[str]:
         """
