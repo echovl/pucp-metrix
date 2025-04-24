@@ -30,6 +30,7 @@ from iapucp_metrix.pipes.indices.syntactic_pattern_density_indices import (
 from iapucp_metrix.pipes.indices.textual_simplicity_indices import (
     TextualSimplicityIndices,
 )
+from iapucp_metrix.pipes.indices.word_frequency_indices import WordFrequencyIndices
 from iapucp_metrix.pipes.indices.word_information_indices import WordInformationIndices
 from iapucp_metrix.pipes.informative_word_tagger import InformativeWordTagger
 from iapucp_metrix.pipes.logical_connectives_tagger import LogicalConnectivesTagger
@@ -598,3 +599,18 @@ def create_es_word_information_indices(
     WordInformationIndices: The pipe that calculates the word information indices.
     """
     return WordInformationIndices(nlp)
+
+
+@Spanish.factory("word_frequency_indices")
+def create_es_word_frequency_indices(nlp: Language, name: str) -> WordFrequencyIndices:
+    """
+    Function that creates word frequency indices pipe.
+
+    Paramters:
+    nlp(Language): Spacy model that will be used for the pipeline.
+    name(str): Name of the pipe.
+
+    Returns:
+    WordFrequencyIndices: The pipe that calculates the word frequency indices.
+    """
+    return WordFrequencyIndices(nlp)

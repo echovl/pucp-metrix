@@ -37,6 +37,8 @@ class Analyzer:
         self._nlp.add_pipe("semantic_cohesion_indices")
         self._nlp.add_pipe("informative_word_tagger")
         self._nlp.add_pipe("word_information_indices")
+        self._nlp.add_pipe("textual_simplicity_indices")
+        self._nlp.add_pipe("word_frequency_indices")
         self._nlp.add_pipe("wrapper_serializer", last=True)
 
     def analyze(self, texts: List[str]) -> list[Doc]:

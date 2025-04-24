@@ -35,7 +35,6 @@ def get_mean_std_of_metric(
         raise ValueError("'statistic_type' can only take 'mean', 'std' or 'all'.")
     else:
         counter = counter_function(doc)  # Find the values to add to the counter
-        print("Counter", counter)
         stat_results = StatisticsResults()
         # Calculate the statistics
         if statistic_type in ["std", "all"]:

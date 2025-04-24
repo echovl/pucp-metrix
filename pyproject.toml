@@ -10,6 +10,7 @@ dependencies = [
     "nltk>=3.9.1",
     "pyphen>=0.17.2",
     "spacy>=3.8.5",
+    "wordfreq>=3.1.1",
 ]
 
 [dependency-groups]

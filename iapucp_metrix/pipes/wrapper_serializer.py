@@ -31,6 +31,7 @@ class WrapperSerializer:
             **doc._.referential_cohesion_indices,
             **doc._.semantic_cohesion_indices,
             **doc._.textual_simplicity_indices,
+            **doc._.word_frequency_indices,
         }
 
         return doc_new
