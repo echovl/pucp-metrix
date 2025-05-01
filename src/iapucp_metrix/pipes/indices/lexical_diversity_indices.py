@@ -1,3 +1,4 @@
+import math
 import statistics
 from collections import Counter
 from time import time
@@ -91,6 +92,7 @@ class LexicalDiversityIndices:
         )
         doc._.lexical_diversity_indices["LDMLTD"] = self.__calculate_mltd(doc)
         doc._.lexical_diversity_indices["LDVOCd"] = self.__calculate_vocd(doc)
+        doc._.lexical_diversity_indices["LDMaas"] = self.__calculate_maas(doc)
         doc._.lexical_diversity_indices["LDDno"] = self.__get_noun_density(doc)
         doc._.lexical_diversity_indices["LDDvb"] = self.__get_verb_density(doc)
         doc._.lexical_diversity_indices["LDDadv"] = self.__get_adverb_density(doc)
@@ -98,6 +100,20 @@ class LexicalDiversityIndices:
         end = time()
         print(f"Lexical diversity indices analyzed in {end - start} seconds.")
         return doc
+
+    def __calculate_maas(self, doc: Doc) -> float:
+        """
+        This method return the Maas' index of a text.
+
+        Parameters:
+        doc(Doc): The text to be anaylized.
+
+        Returns:
+        float: The Maas' index of a text.
+        """
+        n = doc._.alpha_words_count
+        v = doc._.alpha_words_different_count
+        return 0 if v == 1 else (math.log10(n) - math.log10(v)) / math.log10(v) ** 2
 
     def __calculate_mltd(self, doc: Doc) -> float:
         """

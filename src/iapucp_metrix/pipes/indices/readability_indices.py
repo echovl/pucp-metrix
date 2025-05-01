@@ -1,3 +1,5 @@
+import math
+from collections import Counter
 from math import sqrt
 from time import time
 
@@ -57,6 +59,8 @@ class ReadabilityIndices:
         doc._.readability_indices["RDMU"] = self.__calculate_readability_mu(doc)
         doc._.readability_indices["RDSMOG"] = self.__calculate_smog(doc)
         doc._.readability_indices["RDFOG"] = self.__calculate_gunning_fog(doc)
+        doc._.readability_indices["RDHS"] = self.__calculate_honore_statistic(doc)
+        doc._.readability_indices["RDBR"] = self.__calculate_brunet_index(doc)
         end = time()
         print(f"Readability indices analyzed in {end - start} seconds.")
         return doc
@@ -93,6 +97,47 @@ class ReadabilityIndices:
 
         return (
             206.835 - 62.3 * syllable_count / words_count - words_count / sentence_count
+        )
+
+    def __calculate_brunet_index(self, doc: Doc) -> float:
+        """
+        This function obtains the Brunet index for a text.
+
+        Parameters:
+        doc(Doc): The text to be analized.
+
+        Returns:
+        float: The Brunet index for a text.
+        """
+        words_count = doc._.alpha_words_count
+        unique_words_count = doc._.alpha_words_different_count
+
+        return words_count ** (unique_words_count**-0.165)
+
+    def __calculate_honore_statistic(self, doc: Doc) -> float:
+        """
+        This function obtains the Honore's Statistic for a text.
+
+        Parameters:
+        doc(Doc): The text to be analized.
+
+        Returns:
+        float: The Honore's Statistic for a text.
+        """
+        words_count = doc._.alpha_words_count
+        unique_words_count = doc._.alpha_words_different_count
+
+        freqs = Counter(doc._.alpha_words_different)
+        hapaxes_legomena = [word for word, freq in freqs.items() if freq == 1]
+
+        return (
+            0
+            if unique_words_count == 0 or len(hapaxes_legomena) == unique_words_count
+            else (
+                100
+                * (math.log10(words_count))
+                / (1 - (len(hapaxes_legomena) / unique_words_count))
+            )
         )
 
     def __calculate_readability_mu(self, doc: Doc) -> float:
@@ -143,4 +188,3 @@ class ReadabilityIndices:
         return 0.4 * (
             (words_count / sentence_count) + 100 * (polysyllabic_count / words_count)
         )
-

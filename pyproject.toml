@@ -1,7 +1,10 @@
 [project]
-name = "pucp-metrix"
+name = "iapucp-metrix"
 version = "0.1.0"
-description = "Add your description here"
+description = "A comprehensive set of indicators and metrics for assessing text complexity in Spanish."
+authors = [
+    { name = "Alonso Villegas" }
+]
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -18,3 +21,7 @@ dependencies = [
 dev = [
     "pytest>=8.3.5",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

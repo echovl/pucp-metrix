@@ -72,15 +72,19 @@ class WordFrequencyIndices:
             doc._.word_frequency_indices["WFRCcw"],
             doc._.word_frequency_indices["WFRCcwi"],
         ) = self.__get_rare_content_words_count(doc)
+        (
+            doc._.word_frequency_indices["WFRCcwd"],
+            doc._.word_frequency_indices["WFRCcwdi"],
+        ) = self.__get_distinct_rare_content_words_count(doc)
         doc._.word_frequency_indices["WFMcw"] = (
             self.__get_mean_of_content_words_frequency(doc)
         )
         doc._.word_frequency_indices["WFMw"] = self.__get_mean_of_words_frequency(doc)
-        doc._.word_frequency_indices["WFRMcw"] = (
-            self.__get_mean_of_rarest_content_words_frequency_per_sentence(doc)
-        )
-        doc._.word_frequency_indices["WFRMw"] = (
+        doc._.word_frequency_indices["WFMrw"] = (
             self.__get_mean_of_rarest_words_frequency_per_sentence(doc)
+        )
+        doc._.word_frequency_indices["WFMrcw"] = (
+            self.__get_mean_of_rarest_content_words_frequency_per_sentence(doc)
         )
         end = time()
         print(f"Word frequency indices analyzed in {end - start} seconds.")
@@ -183,6 +187,27 @@ class WordFrequencyIndices:
         num_rare_content_words = 0
         for word in doc._.content_words:
             freq = zipf_frequency(word.text.lower(), "es")
+            if freq <= self._rare_word_frequency:
+                num_rare_content_words += 1
+
+        return (
+            num_rare_content_words,
+            (num_rare_content_words / doc._.alpha_words_count) * self._incidence,
+        )
+
+    def __get_distinct_rare_content_words_count(self, doc: Doc) -> (float, float):
+        """
+        This method returns the number of distinct rare content words and its incidence per {self._incidence} words.
+
+        Parameters:
+        doc(Doc): The text to be analyzed.
+
+        Returns:
+        (float, float): The number of distinct rare content words and its incidence per {self._incidence} words.
+        """
+        num_rare_content_words = 0
+        for word in doc._.content_words_different:
+            freq = zipf_frequency(word.lower(), "es")
             if freq <= self._rare_word_frequency:
                 num_rare_content_words += 1
 
