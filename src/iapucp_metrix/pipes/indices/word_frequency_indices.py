@@ -224,8 +224,15 @@ class WordFrequencyIndices:
         float: The average frequency of content words.
         """
 
-        return statistics.mean(
-            [zipf_frequency(word.text.lower(), "es") for word in doc._.content_words]
+        return (
+            statistics.mean(
+                [
+                    zipf_frequency(word.text.lower(), "es")
+                    for word in doc._.content_words
+                ]
+            )
+            if doc._.content_words_count > 0
+            else 0
         )
 
     def __get_mean_of_words_frequency(self, doc: Doc) -> float:
