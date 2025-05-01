@@ -1,4 +1,4 @@
-from typing import List
+import multiprocessing
 
 import spacy
 from spacy.tokens import Doc
@@ -41,7 +41,7 @@ class Analyzer:
         self._nlp.add_pipe("word_frequency_indices")
         self._nlp.add_pipe("wrapper_serializer", last=True)
 
-    def analyze(self, texts: List[str]) -> list[Doc]:
+    def analyze(self, texts: list[str]) -> list[Doc]:
         """Analyze a text.
 
         text(str): The text to analyze.
@@ -49,3 +49,33 @@ class Analyzer:
         """
         doc = self._nlp.pipe(texts)
         return doc
+
+    def compute_metrics(
+        self, texts: list[str], workers: int = -1, batch_size: int = 1
+    ) -> list[dict]:
+        """
+        This method calculates all indices for a list of texts using multiprocessing, if available, and stores them in a list of dictionaries.
+
+        Parameters:
+        texts(List[str]): The texts to be analyzed.
+        workers(int): Amount of threads that will complete this operation. If it's -1 then all cpu cores will be used.
+        batch_size(int): Amount of texts that each worker will analyze sequentially until no more texts are left.
+
+        Returns:
+        List[Dict]: A list with the dictionaries containing the indices for all texts sent for analysis.
+        """
+        if workers == 0 or workers < -1:
+            raise ValueError(
+                "Workers must be -1 or any positive number greater than 0."
+            )
+        else:
+            threads = multiprocessing.cpu_count() if workers == -1 else workers
+            # Process all texts using multiprocessing
+            metrics = [
+                doc._.coh_metrix_indices
+                for doc in self._nlp.pipe(
+                    texts, batch_size=batch_size, n_process=threads
+                )
+            ]
+
+            return metrics

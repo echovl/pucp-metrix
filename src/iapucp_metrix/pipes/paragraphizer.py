@@ -70,7 +70,6 @@ class Paragraphizer:
         Returns:
         Doc: The analyzed spacy document.
         """
-        print("Running Paragraphizer")
         length_of_separator = len(self._paragraph_delimiter)
         separator_indices = re.finditer(self._paragraph_delimiter, doc.text)
         paragraphs = []
@@ -107,7 +106,5 @@ class Paragraphizer:
         # Add the paragraphs found to the document
         doc._.paragraphs = paragraphs
         doc._.paragraph_count = len(doc._.paragraphs)
-
-        print("Paragraphizer finished", doc._.paragraph_count, "paragraphs")
 
         return doc

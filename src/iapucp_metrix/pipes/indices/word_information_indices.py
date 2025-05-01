@@ -47,8 +47,6 @@ class WordInformationIndices:
         if len(doc.text) == 0:
             raise ValueError("The text is empty.")
 
-        print("Analyzing word information indices")
-        start = time()
         doc._.word_information_indices["WRDNOUN"] = self.__get_noun_incidence(doc)
         doc._.word_information_indices["WRDVERB"] = self.__get_verb_incidence(doc)
         doc._.word_information_indices["WRDADJ"] = self.__get_adjective_incidence(doc)
@@ -74,8 +72,6 @@ class WordInformationIndices:
         doc._.word_information_indices["WRDPRP3p"] = (
             self.__get_personal_pronoun_third_person_plural_form_incidence(doc)
         )
-        end = time()
-        print(f"Word information indices analyzed in {end - start} seconds.")
 
         return doc
 

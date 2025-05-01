@@ -102,12 +102,8 @@ class ReferentialCohesionIndices:
         if len(doc.text) == 0:
             raise ValueError("The text is empty.")
 
-        print("Analyzing referential cohesion indices.")
-        start = time()
         self.__get_overlap_adjacent_sentences(doc)
         self.__get_overlap_all_sentences(doc)
-        end = time()
-        print(f"Referential cohesion indices analyzed in {end - start} seconds.")
 
         return doc
 

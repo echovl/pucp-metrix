@@ -15,15 +15,6 @@ def calculate_sentence_ranges(nlp, texts: list[str]):
             words = [token for token in sent if not token.is_punct]
             sentence_lengths.append(len(words))
 
-    mean_length = np.mean(sentence_lengths)
-    std_dev = np.std(sentence_lengths)
-    median_length = np.median(sentence_lengths)
-    percentiles = np.percentile(sentence_lengths, [25, 50, 75])
-
-    print(f"Longitud media de las sentencias: {mean_length:.2f} palabras")
-    print(f"Desviación estándar: {std_dev:.2f}")
-    print(f"Mediana de la longitud de las sentencias: {median_length}")
-    print(f"Percentiles 25, 50, 75: {percentiles}")
 
     short_threshold = percentiles[0]  # Percentil 25
     medium_threshold = percentiles[1]  # Percentil 50 (mediana)

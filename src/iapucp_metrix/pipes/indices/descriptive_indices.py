@@ -51,8 +51,6 @@ class DescriptiveIndices:
         if len(doc.text) == 0:
             raise ValueError("The text is empty.")
 
-        print("Analyzing descriptive indices")
-        start = time()
         doc._.descriptive_indices["DESPC"] = doc._.paragraph_count
         doc._.descriptive_indices["DESSC"] = doc._.sentence_count
         doc._.descriptive_indices["DESWC"] = doc._.alpha_words_count
@@ -60,8 +58,7 @@ class DescriptiveIndices:
         self.__get_length_of_sentences(doc)
         self.__get_syllables_per_word(doc)
         self.__get_length_of_words(doc)
-        end = time()
-        print(f"Descriptive indices analyzed in {end - start} seconds.")
+
         return doc
 
     def _get_mean_std_of_metric(
@@ -167,4 +164,3 @@ class DescriptiveIndices:
         )
         doc._.descriptive_indices["DESWLsy"] = metrics.mean
         doc._.descriptive_indices["DESWLsyd"] = metrics.std
-

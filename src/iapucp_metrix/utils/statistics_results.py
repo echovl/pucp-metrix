@@ -38,9 +38,9 @@ def get_mean_std_of_metric(
         stat_results = StatisticsResults()
         # Calculate the statistics
         if statistic_type in ["std", "all"]:
-            stat_results.std = statistics.pstdev(counter)
+            stat_results.std = statistics.pstdev(counter) if len(counter) > 0 else 0
 
         if statistic_type in ["mean", "all"]:
-            stat_results.mean = statistics.mean(counter)
+            stat_results.mean = statistics.mean(counter) if len(counter) > 0 else 0
 
         return stat_results

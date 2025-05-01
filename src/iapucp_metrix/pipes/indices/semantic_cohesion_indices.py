@@ -1,3 +1,4 @@
+from importlib.resources import files
 from itertools import tee
 from time import time
 
@@ -34,10 +35,13 @@ class SemanticCohesionIndices:
             )
             raise AttributeError(message)
 
+        models_dir = files("iapucp_metrix.models")
+        lsa_model_path = str(models_dir / "lsa_model.gensim")
+        lsa_dictionary_path = str(models_dir / "lsa_dictionary.gensim")
+
         self._nlp = nlp
-        self._lsa_model = LsaModel(
-            nlp, "./models/lsa_model.gensim", "./models/lsa_dictionary.gensim"
-        )
+        self._lsa_model = LsaModel(nlp, lsa_model_path, lsa_dictionary_path)
+
         Doc.set_extension("semantic_cohesion_indices", default=dict())  # Dictionary
 
     def __call__(self, doc: Doc) -> Doc:
@@ -53,14 +57,11 @@ class SemanticCohesionIndices:
         if len(doc.text) == 0:
             raise ValueError("The text is empty.")
 
-        print("Analyzing semantic cohesion indices")
-        start = time()
         self._get_lsa_overlap_adjacent_sentences(doc)
         self._get_lsa_overlap_all_sentences(doc)
         self._get_lsa_overlap_adjacent_paragraphs(doc)
         self._get_lsa_overlap_given_new_sentences(doc)
-        end = time()
-        print(f"Semantic cohesion indices analyzed in {end - start} seconds.")
+
         return doc
 
     def _get_lsa_overlap_adjacent_sentences(self, doc: Doc) -> None:

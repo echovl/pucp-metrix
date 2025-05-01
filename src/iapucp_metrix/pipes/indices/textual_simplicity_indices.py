@@ -51,11 +51,7 @@ class TextualSimplicityIndices:
         if len(doc.text) == 0:
             raise ValueError("The text is empty.")
 
-        print("Analyzing textual simplicity indices")
-        start = time()
         self.__get_sentences_length_ratio(doc)
-        end = time()
-        print(f"TextualSimplicity indices analyzed in {end - start} seconds.")
         return doc
 
     def __get_sentences_length_ratio(self, doc: Doc) -> None:

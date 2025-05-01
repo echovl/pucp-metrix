@@ -48,8 +48,6 @@ class ReadabilityIndices:
         if len(doc.text) == 0:
             raise ValueError("The text is empty.")
 
-        print("Analyzing readability indices")
-        start = time()
         doc._.readability_indices["RDFHGL"] = (
             self.__calculate_fernandez_huertas_grade_level(doc)
         )
@@ -61,8 +59,7 @@ class ReadabilityIndices:
         doc._.readability_indices["RDFOG"] = self.__calculate_gunning_fog(doc)
         doc._.readability_indices["RDHS"] = self.__calculate_honore_statistic(doc)
         doc._.readability_indices["RDBR"] = self.__calculate_brunet_index(doc)
-        end = time()
-        print(f"Readability indices analyzed in {end - start} seconds.")
+
         return doc
 
     def __calculate_fernandez_huertas_grade_level(self, doc: Doc) -> float:
@@ -154,7 +151,11 @@ class ReadabilityIndices:
         letters_mean = doc._.descriptive_indices["DESWLlt"]
         letters_std = doc._.descriptive_indices["DESWLltd"]
 
-        return (words_count / (words_count - 1)) * (letters_mean / (letters_std**2))
+        return (
+            (words_count / (words_count - 1)) * (letters_mean / (letters_std**2))
+            if (words_count > 1 and letters_std > 0)
+            else 0
+        )
 
     def __calculate_smog(self, doc: Doc) -> float:
         """

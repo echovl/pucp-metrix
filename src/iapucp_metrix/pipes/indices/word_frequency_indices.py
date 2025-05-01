@@ -50,8 +50,6 @@ class WordFrequencyIndices:
         if len(doc.text) == 0:
             raise ValueError("The text is empty.")
 
-        print("Analyzing word frequency indices.")
-        start = time()
         (
             doc._.word_frequency_indices["WFRCno"],
             doc._.word_frequency_indices["WFRCnoi"],
@@ -86,8 +84,7 @@ class WordFrequencyIndices:
         doc._.word_frequency_indices["WFMrcw"] = (
             self.__get_mean_of_rarest_content_words_frequency_per_sentence(doc)
         )
-        end = time()
-        print(f"Word frequency indices analyzed in {end - start} seconds.")
+
         return doc
 
     def __get_rare_nouns_count(self, doc: Doc) -> (float, float):
@@ -261,15 +258,13 @@ class WordFrequencyIndices:
 
         min_freqs = []
         for sent in doc._.non_empty_sentences:
-            min_freqs.append(
-                min(
-                    [
-                        zipf_frequency(word.text.lower(), "es")
-                        for word in sent._.content_words
-                        if sent._.content_words_count > 0
-                    ]
-                )
-            )
+            freqs = [
+                zipf_frequency(word.text.lower(), "es")
+                for word in sent._.content_words
+                if sent._.content_words_count > 0
+            ]
+            if len(freqs) > 0:
+                min_freqs.append(min(freqs))
 
         return min(min_freqs) / len(min_freqs) if len(min_freqs) > 0 else 0
 
@@ -286,14 +281,12 @@ class WordFrequencyIndices:
 
         min_freqs = []
         for sent in doc._.non_empty_sentences:
-            min_freqs.append(
-                min(
-                    [
-                        zipf_frequency(word.text.lower(), "es")
-                        for word in sent._.alpha_words
-                        if sent._.alpha_words_count > 0
-                    ]
-                )
-            )
+            freqs = [
+                zipf_frequency(word.text.lower(), "es")
+                for word in sent._.alpha_words
+                if sent._.alpha_words_count > 0
+            ]
+            if len(freqs) > 0:
+                min_freqs.append(min(freqs))
 
         return min(min_freqs) / len(min_freqs) if len(min_freqs) > 0 else 0

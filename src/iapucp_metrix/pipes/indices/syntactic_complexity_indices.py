@@ -89,8 +89,12 @@ class SyntacticComplexityIndices:
         Returns:
         float: The mean of modifiers per noun phrases.
         """
-        return statistics.mean(
-            [np._.noun_phrase_modifiers_count for np in doc._.noun_phrases]
+        return (
+            statistics.mean(
+                [np._.noun_phrase_modifiers_count for np in doc._.noun_phrases]
+            )
+            if doc._.noun_phrases_count > 0
+            else 0
         )
 
     def __get_mean_number_of_words_before_main_verb(self, doc: Doc) -> float:
@@ -103,11 +107,15 @@ class SyntacticComplexityIndices:
         Returns:
         float: The mean of words before the main verb of sentences.
         """
-        return statistics.mean(
-            [
-                sent._.count_of_words_before_main_verb
-                for sent in doc._.non_empty_sentences
-            ]
+        return (
+            statistics.mean(
+                [
+                    sent._.count_of_words_before_main_verb
+                    for sent in doc._.non_empty_sentences
+                ]
+            )
+            if len(list(doc._.non_empty_sentences)) > 0
+            else 0
         )
 
     def __get_ratio_sentences_with_n_clauses(self, doc: Doc, n_clauses: int) -> float:
@@ -128,4 +136,3 @@ class SyntacticComplexityIndices:
             num_sentences += 1
 
         return 0 if num_sentences == 0 else num_sentences_with_n_clauses / num_sentences
-
