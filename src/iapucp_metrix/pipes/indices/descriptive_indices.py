@@ -54,10 +54,13 @@ class DescriptiveIndices:
         doc._.descriptive_indices["DESPC"] = doc._.paragraph_count
         doc._.descriptive_indices["DESSC"] = doc._.sentence_count
         doc._.descriptive_indices["DESWC"] = doc._.alpha_words_count
+        doc._.descriptive_indices["DESWCU"] = doc._.alpha_words_different_count
         self.__get_length_of_paragraphs(doc)
         self.__get_length_of_sentences(doc)
+        self.__get_max_min_length_of_sentences(doc)
         self.__get_syllables_per_word(doc)
         self.__get_length_of_words(doc)
+        self.__get_length_of_lemmas(doc)
 
         return doc
 
@@ -142,6 +145,41 @@ class DescriptiveIndices:
         )
         doc._.descriptive_indices["DESWLlt"] = metrics.mean
         doc._.descriptive_indices["DESWLltd"] = metrics.std
+
+    def __get_length_of_lemmas(self, doc: Doc) -> None:
+        """
+        This method calculates the average amount and standard deviation of letters in each lemma.
+
+        Parameters:
+        doc(Doc): The text to be anaylized.
+        """
+        count_letters_per_lemma = lambda complete_text: [
+            len(token.lemma_) for token in complete_text._.alpha_words
+        ]
+
+        metrics = self._get_mean_std_of_metric(
+            doc, counter_function=count_letters_per_lemma, statistic_type="all"
+        )
+        doc._.descriptive_indices["DESLLlt"] = metrics.mean
+        doc._.descriptive_indices["DESLLltd"] = metrics.std
+
+    def __get_max_min_length_of_sentences(self, doc: Doc) -> None:
+        """
+        This method calculates the maximum and minimum amount of words in each sentence.
+
+        Parameters:
+        doc(Doc): The text to be anaylized.
+        """
+        sentences = [
+            len(sentence._.alpha_words) for sentence in doc._.non_empty_sentences
+        ]
+
+        doc._.descriptive_indices["DESSLmax"] = (
+            max(sentences) if len(sentences) > 0 else 0
+        )
+        doc._.descriptive_indices["DESSLmin"] = (
+            min(sentences) if len(sentences) > 0 else 0
+        )
 
     def __get_syllables_per_word(self, doc: Doc) -> StatisticsResults:
         """

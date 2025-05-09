@@ -14,6 +14,7 @@ from iapucp_metrix.pipes.indices.descriptive_indices import DescriptiveIndices
 from iapucp_metrix.pipes.indices.lexical_diversity_indices import (
     LexicalDiversityIndices,
 )
+from iapucp_metrix.pipes.indices.psycholinguistic_indices import PsycholinguisticIndices
 from iapucp_metrix.pipes.indices.readability_indices import ReadabilityIndices
 from iapucp_metrix.pipes.indices.referential_cohesion_indices import (
     ReferentialCohesionIndices,
@@ -132,6 +133,23 @@ def create_es_descriptive_indices(nlp: Language, name: str) -> DescriptiveIndice
     ParagraphSplitter: The pipe that finds descriptive indices.
     """
     return DescriptiveIndices(nlp)
+
+
+@Spanish.factory("psycholinguistic_indices")
+def create_es_psycholinguistic_indices(
+    nlp: Language, name: str
+) -> PsycholinguisticIndices:
+    """
+    Function that creates psycholinguistic indices pipe.
+
+    Paramters:
+    nlp(Language): Spacy model that will be used for the pipeline.
+    name(str): Name of the pipe.
+
+    Returns:
+    ParagraphSplitter: The pipe that finds psycholinguistic indices.
+    """
+    return PsycholinguisticIndices(nlp)
 
 
 @Spanish.factory("content_word_identifier")
