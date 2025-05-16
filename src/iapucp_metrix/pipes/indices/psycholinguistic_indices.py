@@ -1,7 +1,7 @@
 from spacy.language import Language
 from spacy.tokens import Doc
 
-from iapucp_metrix.utils.psycholinguistic import get_psycholinguistic_values
+from src.iapucp_metrix.utils.psycholinguistic import PSY_BANK
 
 
 def get_psycholinguistic_ratio(
@@ -23,12 +23,13 @@ def get_psycholinguistic_ratio(
     total_count = 0
 
     for word in doc._.alpha_words:
-        psycho_values = get_psycholinguistic_values(word.text)
-        if psycho_values:
-            value = psycho_values[pyscholinguistic_name]
-            if value >= lower_bound and value < upper_bound:
-                count += 1
-            total_count += 1
+        value = PSY_BANK.get_ratings(word.text).get(pyscholinguistic_name)
+        if value is None:
+            continue
+
+        if value >= lower_bound and value < upper_bound:
+            count += 1
+        total_count += 1
 
     return count / total_count if total_count > 0 else 0
 
@@ -113,6 +114,32 @@ class PsycholinguisticIndices:
         )
         doc._.psycholinguistic_indices["PSYFM3"] = get_psycholinguistic_ratio(
             doc, "familiarity", 5.5, 7
+        )
+
+        doc._.psycholinguistic_indices["PSYARO0"] = get_psycholinguistic_ratio(
+            doc, "arousal", 1, 3
+        )
+        doc._.psycholinguistic_indices["PSYARO1"] = get_psycholinguistic_ratio(
+            doc, "arousal", 3, 5
+        )
+        doc._.psycholinguistic_indices["PSYARO2"] = get_psycholinguistic_ratio(
+            doc, "arousal", 5, 7
+        )
+        doc._.psycholinguistic_indices["PSYARO3"] = get_psycholinguistic_ratio(
+            doc, "arousal", 7, 9
+        )
+
+        doc._.psycholinguistic_indices["PSYVAL0"] = get_psycholinguistic_ratio(
+            doc, "valence", 1, 3
+        )
+        doc._.psycholinguistic_indices["PSYVAL1"] = get_psycholinguistic_ratio(
+            doc, "valence", 3, 5
+        )
+        doc._.psycholinguistic_indices["PSYVAL2"] = get_psycholinguistic_ratio(
+            doc, "valence", 5, 7
+        )
+        doc._.psycholinguistic_indices["PSYVAL3"] = get_psycholinguistic_ratio(
+            doc, "valence", 7, 9
         )
 
         return doc

@@ -1,5 +1,4 @@
 import statistics
-from time import time
 from typing import Callable
 
 from spacy.language import Language
@@ -36,6 +35,7 @@ class DescriptiveIndices:
             raise AttributeError(message)
 
         self._nlp = nlp
+        self._incidence = 1000
         Doc.set_extension("descriptive_indices", default=dict())  # Dictionary
 
     def __call__(self, doc: Doc) -> Doc:
@@ -52,14 +52,27 @@ class DescriptiveIndices:
             raise ValueError("The text is empty.")
 
         doc._.descriptive_indices["DESPC"] = doc._.paragraph_count
+        doc._.descriptive_indices["DESPCi"] = self._incidence * (
+            doc._.paragraph_count / doc._.alpha_words_count
+        )
         doc._.descriptive_indices["DESSC"] = doc._.sentence_count
+        doc._.descriptive_indices["DESSCi"] = self._incidence * (
+            doc._.sentence_count / doc._.alpha_words_count
+        )
         doc._.descriptive_indices["DESWC"] = doc._.alpha_words_count
         doc._.descriptive_indices["DESWCU"] = doc._.alpha_words_different_count
+        doc._.descriptive_indices["DESWCUi"] = self._incidence * (
+            doc._.alpha_words_different_count / doc._.alpha_words_count
+        )
         self.__get_length_of_paragraphs(doc)
         self.__get_length_of_sentences(doc)
+        self.__get_length_of_sentences_no_stopwords(doc)
         self.__get_max_min_length_of_sentences(doc)
         self.__get_syllables_per_word(doc)
+        self.__get_syllables_per_content_word(doc)
+        self.__get_length_of_content_words(doc)
         self.__get_length_of_words(doc)
+        self.__get_length_of_words_no_stopwords(doc)
         self.__get_length_of_lemmas(doc)
 
         return doc
@@ -129,6 +142,41 @@ class DescriptiveIndices:
         doc._.descriptive_indices["DESSL"] = metrics.mean
         doc._.descriptive_indices["DESSLd"] = metrics.std
 
+    def __get_length_of_sentences_no_stopwords(self, doc: Doc) -> None:
+        """
+        This method calculate the average amount and standard deviation of words in each sentence, excluding stopwords.
+
+        Parameters:
+        doc(Doc): The text to be anaylized.
+        """
+        count_length_of_sentences = lambda complete_text: [
+            len([token for token in sentence._.alpha_words if not token.is_stop])
+            for sentence in complete_text._.non_empty_sentences
+        ]
+
+        metrics = self._get_mean_std_of_metric(
+            doc, counter_function=count_length_of_sentences, statistic_type="all"
+        )
+        doc._.descriptive_indices["DESSNSL"] = metrics.mean
+        doc._.descriptive_indices["DESSNSLd"] = metrics.std
+
+    def __get_length_of_content_words(self, doc: Doc) -> None:
+        """
+        This method calculates the average amount and standard deviation of letters in each content word.
+
+        Parameters:
+        doc(Doc): The text to be anaylized.
+        """
+        count_letters_per_word = lambda complete_text: [
+            len(token) for token in complete_text._.content_words
+        ]
+
+        metrics = self._get_mean_std_of_metric(
+            doc, counter_function=count_letters_per_word, statistic_type="all"
+        )
+        doc._.descriptive_indices["DESCWLlt"] = metrics.mean
+        doc._.descriptive_indices["DESCWLltd"] = metrics.std
+
     def __get_length_of_words(self, doc: Doc) -> None:
         """
         This method calculates the average amount and standard deviation of letters in each word.
@@ -145,6 +193,23 @@ class DescriptiveIndices:
         )
         doc._.descriptive_indices["DESWLlt"] = metrics.mean
         doc._.descriptive_indices["DESWLltd"] = metrics.std
+
+    def __get_length_of_words_no_stopwords(self, doc: Doc) -> None:
+        """
+        This method calculates the average amount and standard deviation of letters in each word, excluding stopwords.
+
+        Parameters:
+        doc(Doc): The text to be anaylized.
+        """
+        count_letters_per_word = lambda complete_text: [
+            len(token) for token in complete_text._.alpha_words if not token.is_stop
+        ]
+
+        metrics = self._get_mean_std_of_metric(
+            doc, counter_function=count_letters_per_word, statistic_type="all"
+        )
+        doc._.descriptive_indices["DESWNSLlt"] = metrics.mean
+        doc._.descriptive_indices["DESWNSLltd"] = metrics.std
 
     def __get_length_of_lemmas(self, doc: Doc) -> None:
         """
@@ -202,3 +267,27 @@ class DescriptiveIndices:
         )
         doc._.descriptive_indices["DESWLsy"] = metrics.mean
         doc._.descriptive_indices["DESWLsyd"] = metrics.std
+
+    def __get_syllables_per_content_word(self, doc: Doc) -> StatisticsResults:
+        """
+        This method calculates the average amount and standard deviation of syllables in each content word.
+
+        Parameters:
+        doc(Doc): The text to be anaylized.
+
+        Returns:
+        None
+        """
+        count_syllables_per_word = lambda doc: [
+            token._.syllable_count
+            for token in doc._.content_words
+            if token._.syllables is not None
+        ]
+
+        print(doc._.content_words)
+
+        metrics = self._get_mean_std_of_metric(
+            doc, counter_function=count_syllables_per_word, statistic_type="all"
+        )
+        doc._.descriptive_indices["DESCWLsy"] = metrics.mean
+        doc._.descriptive_indices["DESCWLsyd"] = metrics.std

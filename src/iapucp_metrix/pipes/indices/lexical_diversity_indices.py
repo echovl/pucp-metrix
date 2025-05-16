@@ -88,6 +88,18 @@ class LexicalDiversityIndices:
         doc._.lexical_diversity_indices["LDTTRLadj"] = (
             self.__get_type_token_ratio_of_lemma_adjectives(doc)
         )
+        doc._.lexical_diversity_indices["LDTTRLpron"] = (
+            self.__get_type_token_ratio_of_pronouns(doc)
+        )
+        doc._.lexical_diversity_indices["LDTTRLrpron"] = (
+            self.__get_type_token_ratio_of_pronouns_relative(doc)
+        )
+        doc._.lexical_diversity_indices["LDTTRLipron"] = (
+            self.__get_type_token_ratio_of_pronouns_indefinite(doc)
+        )
+        doc._.lexical_diversity_indices["LDTTRLifn"] = (
+            self.__get_type_token_ratio_of_functional_words(doc)
+        )
         doc._.lexical_diversity_indices["LDMLTD"] = self.__calculate_mltd(doc)
         doc._.lexical_diversity_indices["LDVOCd"] = self.__calculate_vocd(doc)
         doc._.lexical_diversity_indices["LDMaas"] = self.__calculate_maas(doc)
@@ -329,6 +341,74 @@ class LexicalDiversityIndices:
             if doc._.adjectives_count == 0
             else len(set([word.lemma_ for word in doc._.adjectives]))
             / doc._.adjectives_count
+        )
+
+    def __get_type_token_ratio_of_pronouns(self, doc: Doc) -> float:
+        """
+        This method returns the type token ratio of pronouns of a text.
+
+        Parameters:
+        doc(Doc): The text to be anaylized.
+
+        Returns:
+        float: The type token ratio between the pronouns of a text.
+        """
+        return (
+            0
+            if doc._.pronouns_count == 0
+            else len(set([word.text.lower() for word in doc._.pronouns]))
+            / doc._.pronouns_count
+        )
+
+    def __get_type_token_ratio_of_pronouns_relative(self, doc: Doc) -> float:
+        """
+        This method returns the type token ratio of relative pronouns of a text.
+
+        Parameters:
+        doc(Doc): The text to be anaylized.
+
+        Returns:
+        float: The type token ratio between the relative pronouns of a text.
+        """
+        return (
+            0
+            if doc._.pronouns_relative_count == 0
+            else len(set([word.text.lower() for word in doc._.pronouns_relative]))
+            / doc._.pronouns_relative_count
+        )
+
+    def __get_type_token_ratio_of_pronouns_indefinite(self, doc: Doc) -> float:
+        """
+        This method returns the type token ratio of indefinite pronouns of a text.
+
+        Parameters:
+        doc(Doc): The text to be anaylized.
+
+        Returns:
+        float: The type token ratio between the indefinite pronouns of a text.
+        """
+        return (
+            0
+            if doc._.pronouns_indefinite_count == 0
+            else len(set([word.text.lower() for word in doc._.pronouns_indefinite]))
+            / doc._.pronouns_indefinite_count
+        )
+
+    def __get_type_token_ratio_of_functional_words(self, doc: Doc) -> float:
+        """
+        This method returns the type token ratio of functional words of a text.
+
+        Parameters:
+        doc(Doc): The text to be anaylized.
+
+        Returns:
+        float: The type token ratio between the functional words of a text.
+        """
+        return (
+            0
+            if doc._.functors_count == 0
+            else len(set([word.text.lower() for word in doc._.functors]))
+            / doc._.functors_count
         )
 
     def __get_noun_density(self, doc: Doc) -> float:

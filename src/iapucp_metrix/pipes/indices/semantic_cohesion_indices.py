@@ -1,6 +1,5 @@
 from importlib.resources import files
 from itertools import tee
-from time import time
 
 from spacy.language import Language
 from spacy.tokens import Doc, Span

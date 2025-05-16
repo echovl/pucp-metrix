@@ -1,6 +1,8 @@
 from spacy.language import Language
 from spacy.tokens import Doc, Span
 
+from iapucp_metrix.utils.utils import is_function_word
+
 
 def doc_nouns_getter(doc: Doc) -> str:
     """
@@ -107,6 +109,21 @@ def doc_adverbs_getter(doc: Doc) -> str:
             yield token
 
 
+def doc_functors_getter(doc: Doc) -> str:
+    """
+    Function that returns all functors for the doc.
+
+    Parameters:
+    doc(Doc): The document to analyze.
+
+    Yields:
+    str: The functors.
+    """
+    for sent in doc._.non_empty_sentences:
+        for token in sent._.functors:
+            yield token
+
+
 def doc_pronouns_getter(doc: Doc) -> str:
     """
     Function that returns all pronouns for the doc.
@@ -119,6 +136,36 @@ def doc_pronouns_getter(doc: Doc) -> str:
     """
     for sent in doc._.non_empty_sentences:
         for token in sent._.pronouns:
+            yield token
+
+
+def doc_pronouns_relative_getter(doc: Doc) -> str:
+    """
+    Function that returns all relative pronouns for the doc.
+
+    Parameters:
+    doc(Doc): The document to analyze.
+
+    Yields:
+    str: The pronouns.
+    """
+    for sent in doc._.non_empty_sentences:
+        for token in sent._.pronouns_relative:
+            yield token
+
+
+def doc_pronouns_indefinite_getter(doc: Doc) -> str:
+    """
+    Function that returns all indefinite pronouns for the doc.
+
+    Parameters:
+    doc(Doc): The document to analyze.
+
+    Yields:
+    str: The pronouns.
+    """
+    for sent in doc._.non_empty_sentences:
+        for token in sent._.pronouns_indefinite:
             yield token
 
 
@@ -283,12 +330,18 @@ class InformativeWordTagger:
         Span.set_extension("adjectives_count", default=0)
         Span.set_extension("adverbs", default=[])
         Span.set_extension("adverbs_count", default=0)
+        Span.set_extension("functors", default=[])
+        Span.set_extension("functors_count", default=0)
         Span.set_extension("coordinating_conjunctions", default=[])
         Span.set_extension("coordinating_conjunctions_count", default=0)
         Span.set_extension("subordinating_conjunctions", default=[])
         Span.set_extension("subordinating_conjunctions_count", default=0)
         Span.set_extension("pronouns", default=[])
         Span.set_extension("pronouns_count", default=0)
+        Span.set_extension("pronouns_indefinite", default=[])
+        Span.set_extension("pronouns_indefinite_count", default=0)
+        Span.set_extension("pronouns_relative", default=[])
+        Span.set_extension("pronouns_relative_count", default=0)
         Span.set_extension("pronouns_singular_first_person", default=[])
         Span.set_extension("pronouns_singular_first_person_count", default=0)
         Span.set_extension("pronouns_plural_first_person", default=[])
@@ -317,6 +370,8 @@ class InformativeWordTagger:
         Doc.set_extension("adjectives_count", default=0)
         Doc.set_extension("adverbs", getter=doc_adverbs_getter)
         Doc.set_extension("adverbs_count", default=0)
+        Doc.set_extension("functors", getter=doc_functors_getter)
+        Doc.set_extension("functors_count", default=0)
         Doc.set_extension(
             "coordinating_conjunctions", getter=doc_coordinating_conjunctions_getter
         )
@@ -327,6 +382,10 @@ class InformativeWordTagger:
         Doc.set_extension("subordinating_conjunctions_count", default=0)
         Doc.set_extension("pronouns", getter=doc_pronouns_getter)
         Doc.set_extension("pronouns_count", default=0)
+        Doc.set_extension("pronouns_indefinite", getter=doc_pronouns_indefinite_getter)
+        Doc.set_extension("pronouns_indefinite_count", default=0)
+        Doc.set_extension("pronouns_relative", getter=doc_pronouns_relative_getter)
+        Doc.set_extension("pronouns_relative_count", default=0)
         Doc.set_extension(
             "pronouns_singular_first_person",
             getter=doc_pronouns_singular_first_person_getter,
@@ -396,6 +455,9 @@ class InformativeWordTagger:
             sent._.adverbs = [
                 token for token in sent._.alpha_words if token.pos_ == "ADV"
             ]
+            sent._.functors = [
+                token for token in sent._.alpha_words if is_function_word(token)
+            ]
             sent._.coordinating_conjunctions = [
                 token for token in sent._.alpha_words if token.pos_ == "CCONJ"
             ]
@@ -404,6 +466,16 @@ class InformativeWordTagger:
             ]
             sent._.pronouns = [
                 token for token in sent._.alpha_words if token.pos_ == "PRON"
+            ]
+            sent._.pronouns_indefinite = [
+                token
+                for token in sent._.pronouns
+                if "Ind" in token.morph.get("PronType")
+            ]
+            sent._.pronouns_relative = [
+                token
+                for token in sent._.pronouns
+                if "Rel" in token.morph.get("PronType")
             ]
             sent._.pronouns_singular_first_person = [
                 token
@@ -442,6 +514,7 @@ class InformativeWordTagger:
             sent._.infinitives_count = len(sent._.infinitives)
             sent._.adjectives_count = len(sent._.adjectives)
             sent._.adverbs_count = len(sent._.adverbs)
+            sent._.functors_count = len(sent._.functors)
             sent._.coordinating_conjunctions_count = len(
                 sent._.coordinating_conjunctions
             )
@@ -449,6 +522,8 @@ class InformativeWordTagger:
                 sent._.subordinating_conjunctions
             )
             sent._.pronouns_count = len(sent._.pronouns)
+            sent._.pronouns_indefinite_count = len(sent._.pronouns_indefinite)
+            sent._.pronouns_relative_count = len(sent._.pronouns_relative)
             sent._.pronouns_singular_first_person_count = len(
                 sent._.pronouns_singular_first_person
             )
@@ -474,6 +549,7 @@ class InformativeWordTagger:
             doc._.infinitives_count += sent._.infinitives_count
             doc._.adjectives_count += sent._.adjectives_count
             doc._.adverbs_count += sent._.adverbs_count
+            doc._.functors_count += sent._.functors_count
             doc._.coordinating_conjunctions_count += (
                 sent._.coordinating_conjunctions_count
             )
@@ -481,6 +557,8 @@ class InformativeWordTagger:
                 sent._.subordinating_conjunctions_count
             )
             doc._.pronouns_count += sent._.pronouns_count
+            doc._.pronouns_indefinite_count += sent._.pronouns_indefinite_count
+            doc._.pronouns_relative_count += sent._.pronouns_relative_count
             doc._.pronouns_singular_first_person_count += (
                 sent._.pronouns_singular_first_person_count
             )

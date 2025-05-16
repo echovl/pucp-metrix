@@ -1,6 +1,7 @@
 import re
 import textwrap
-from typing import List
+from itertools import tee
+from typing import List, Tuple
 
 import spacy
 from spacy.tokens import Doc, Span, Token
@@ -58,7 +59,28 @@ def is_content_word(token: Token) -> bool:
         "VERB",
         "ADJ",
         "ADV",
+    ]
+
+
+def is_function_word(token: Token) -> bool:
+    """
+    This function checks if a token is a function word.
+
+    Parameters:
+    token(Token): A Spacy token to analyze.
+
+    Returns:
+    bool: True or false.
+    """
+    return token.is_alpha and token.pos_ in [
+        "DET",
+        "PRON",
+        "ADP",
+        "CCONJ",
+        "SCONJ",
         "AUX",
+        "PART",
+        "INTJ",
     ]
 
 
@@ -101,3 +123,21 @@ def preprocess_text_spanish(text: str) -> str:
     clean_text = re.sub(r"\n\n\n+", "\n\n", text)
     clean_text = textwrap.dedent(clean_text)
     return clean_text
+
+
+def get_adjacent_sentences_pairs(doc: Doc) -> Tuple[Span, Span]:
+    """
+    Iterator that returns all pairs of adjacent sentences.
+
+    Parameters:
+    doc(Doc): The document to analyze.
+
+    Yields:
+    Tuple[Span, Span]: Pair of spans that represent two adjacent sentences.
+    """
+    sentences = doc._.non_empty_sentences
+    prev, cur = tee(sentences)
+    next(cur, None)
+    # Return each pair of sentences
+    for prev, cur in zip(prev, cur):
+        yield prev, cur

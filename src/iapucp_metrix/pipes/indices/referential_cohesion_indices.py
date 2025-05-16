@@ -1,6 +1,5 @@
 import statistics
 from itertools import combinations, tee
-from time import time
 from typing import Callable, Dict, Iterator, List, Tuple
 
 from spacy.language import Language
