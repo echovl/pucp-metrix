@@ -1,4 +1,5 @@
 import statistics
+from time import time
 
 from rapidfuzz.distance import Levenshtein
 from spacy.language import Language
@@ -48,6 +49,7 @@ class SyntacticComplexityIndices:
         if len(doc.text) == 0:
             raise ValueError("The text is empty.")
 
+        start = time()
         doc._.syntactic_complexity_indices["SYNNP"] = (
             self.__get_mean_number_of_modifiers_per_noun_phrase(doc)
         )
@@ -84,6 +86,7 @@ class SyntacticComplexityIndices:
         doc._.syntactic_complexity_indices["SYNCLS7"] = (
             self.__get_ratio_sentences_with_n_clauses(doc, 7)
         )
+        print(f"Syntactic complexity indices calculation took {time() - start} seconds.")
 
         return doc
 

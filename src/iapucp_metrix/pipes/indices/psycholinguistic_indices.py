@@ -1,7 +1,8 @@
 from spacy.language import Language
+from time import time
 from spacy.tokens import Doc
 
-from src.iapucp_metrix.utils.psycholinguistic import PSY_BANK
+from iapucp_metrix.utils.psycholinguistic import PSY_BANK
 
 
 def get_psycholinguistic_ratio(
@@ -77,6 +78,10 @@ class PsycholinguisticIndices:
         if len(doc.text) == 0:
             raise ValueError("The text is empty.")
 
+        start = time()
+        doc._.psycholinguistic_indices["PSYC"] = get_psycholinguistic_ratio(
+            doc, "concreteness", 0, 99
+        )
         doc._.psycholinguistic_indices["PSYC0"] = get_psycholinguistic_ratio(
             doc, "concreteness", 1, 2.5
         )
@@ -90,6 +95,9 @@ class PsycholinguisticIndices:
             doc, "concreteness", 5.5, 7
         )
 
+        doc._.psycholinguistic_indices["PSYIM"] = get_psycholinguistic_ratio(
+            doc, "imageability", 0, 99
+        )
         doc._.psycholinguistic_indices["PSYIM0"] = get_psycholinguistic_ratio(
             doc, "imageability", 1, 2.5
         )
@@ -103,6 +111,9 @@ class PsycholinguisticIndices:
             doc, "imageability", 5.5, 7
         )
 
+        doc._.psycholinguistic_indices["PSYFM"] = get_psycholinguistic_ratio(
+            doc, "familiarity", 0, 99
+        )
         doc._.psycholinguistic_indices["PSYFM0"] = get_psycholinguistic_ratio(
             doc, "familiarity", 1, 2.5
         )
@@ -116,6 +127,25 @@ class PsycholinguisticIndices:
             doc, "familiarity", 5.5, 7
         )
 
+        doc._.psycholinguistic_indices["PSYAoA"] = get_psycholinguistic_ratio(
+            doc, "aoa", 0, 99
+        )
+        doc._.psycholinguistic_indices["PSYAoA0"] = get_psycholinguistic_ratio(
+            doc, "aoa", 1, 2.5
+        )
+        doc._.psycholinguistic_indices["PSYAoA1"] = get_psycholinguistic_ratio(
+            doc, "aoa", 2.5, 4
+        )
+        doc._.psycholinguistic_indices["PSYAoA2"] = get_psycholinguistic_ratio(
+            doc, "aoa", 4, 5.5
+        )
+        doc._.psycholinguistic_indices["PSYAoA3"] = get_psycholinguistic_ratio(
+            doc, "aoa", 5.5, 7
+        )
+
+        doc._.psycholinguistic_indices["PSYARO"] = get_psycholinguistic_ratio(
+            doc, "arousal", 0, 99
+        )
         doc._.psycholinguistic_indices["PSYARO0"] = get_psycholinguistic_ratio(
             doc, "arousal", 1, 3
         )
@@ -129,8 +159,11 @@ class PsycholinguisticIndices:
             doc, "arousal", 7, 9
         )
 
+        doc._.psycholinguistic_indices["PSYVAL"] = get_psycholinguistic_ratio(
+            doc, "valence", 0, 99
+        )
         doc._.psycholinguistic_indices["PSYVAL0"] = get_psycholinguistic_ratio(
-            doc, "valence", 1, 3
+            doc, "valence", 1, 4
         )
         doc._.psycholinguistic_indices["PSYVAL1"] = get_psycholinguistic_ratio(
             doc, "valence", 3, 5
@@ -141,5 +174,7 @@ class PsycholinguisticIndices:
         doc._.psycholinguistic_indices["PSYVAL3"] = get_psycholinguistic_ratio(
             doc, "valence", 7, 9
         )
+
+        print(f"Psycholinguistic indices calculation took {time() - start} seconds.")
 
         return doc

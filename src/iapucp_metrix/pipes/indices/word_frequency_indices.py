@@ -50,6 +50,7 @@ class WordFrequencyIndices:
         if len(doc.text) == 0:
             raise ValueError("The text is empty.")
 
+        start = time()
         (
             doc._.word_frequency_indices["WFRCno"],
             doc._.word_frequency_indices["WFRCnoi"],
@@ -84,6 +85,8 @@ class WordFrequencyIndices:
         doc._.word_frequency_indices["WFMrcw"] = (
             self.__get_mean_of_rarest_content_words_frequency_per_sentence(doc)
         )
+
+        print(f"Word frequency indices calculation took {time() - start} seconds.")
 
         return doc
 

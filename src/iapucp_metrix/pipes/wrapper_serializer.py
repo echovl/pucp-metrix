@@ -20,25 +20,7 @@ class WrapperSerializer:
         """
         # Save all indices into a single dictionary
         doc_new = Doc.from_docs([doc], exclude=["user_data"])
-        # Log the number of indices per category
-        print(f"Descriptive indices: {len(doc._.descriptive_indices)}")
-        print(f"Word information indices: {len(doc._.word_information_indices)}")
-        print(
-            f"Syntactic pattern density indices: {len(doc._.syntactic_pattern_density_indices)}"
-        )
-        print(
-            f"Syntactic complexity indices: {len(doc._.syntactic_complexity_indices)}"
-        )
-        print(f"Connective indices: {len(doc._.connective_indices)}")
-        print(f"Lexical diversity indices: {len(doc._.lexical_diversity_indices)}")
-        print(f"Readability indices: {len(doc._.readability_indices)}")
-        print(
-            f"Referential cohesion indices: {len(doc._.referential_cohesion_indices)}"
-        )
-        print(f"Semantic cohesion indices: {len(doc._.semantic_cohesion_indices)}")
-        print(f"Textual simplicity indices: {len(doc._.textual_simplicity_indices)}")
-        print(f"Word frequency indices: {len(doc._.word_frequency_indices)}")
-        print(f"Psycholinguistic indices: {len(doc._.psycholinguistic_indices)}")
+        print(f"Done processing doc {doc_new.text[:10]}...")
 
         doc_new._.coh_metrix_indices = {
             **doc._.descriptive_indices,

@@ -12,24 +12,39 @@ class PsycholinguisticBank:
         models_dir = files("iapucp_metrix.models")
         espal_path = str(models_dir / "espal.csv")
         stadthagen_path = str(models_dir / "stadthagen.csv")
+        alonso_path = str(models_dir / "alonso.csv")
 
         self.espal_df = pd.read_csv(espal_path)
         self.stadthagen_df = pd.read_csv(stadthagen_path)
+        self.alonso_df = pd.read_csv(alonso_path)
+
+        self.espal_df.set_index("word", inplace=True)
+        self.stadthagen_df.set_index("word", inplace=True)
+        self.alonso_df.set_index("word", inplace=True)
 
     def get_ratings(self, word: str) -> dict:
         ratings = {}
-        espal_ratings = self.espal_df[self.espal_df["word"] == word.lower()]
-        stadthagen_ratings = self.stadthagen_df[
-            self.stadthagen_df["word"] == word.lower()
-        ]
-
-        if len(espal_ratings) != 0:
-            ratings["concreteness"] = espal_ratings["concreteness"].values[0]
-            ratings["imageability"] = espal_ratings["imageability"].values[0]
-            ratings["familiarity"] = espal_ratings["familiarity"].values[0]
-        if len(stadthagen_ratings) != 0:
-            ratings["valence"] = stadthagen_ratings["valence"].values[0]
-            ratings["arousal"] = stadthagen_ratings["arousal"].values[0]
+        word = word.lower()
+        if word in self.espal_df.index:
+            e = self.espal_df.loc[word]
+            ratings.update(
+                {
+                    "concreteness": e["concreteness"],
+                    "imageability": e["imageability"],
+                    "familiarity": e["familiarity"],
+                }
+            )
+        if word in self.stadthagen_df.index:
+            s = self.stadthagen_df.loc[word]
+            ratings.update(
+                {
+                    "valence": s["valence"],
+                    "arousal": s["arousal"],
+                }
+            )
+        if word in self.alonso_df.index:
+            a = self.alonso_df.loc[word]
+            ratings["aoa"] = a["aoa"]
 
         return ratings
 

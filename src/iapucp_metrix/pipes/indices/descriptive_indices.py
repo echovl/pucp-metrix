@@ -1,4 +1,5 @@
 import statistics
+from time import time
 from typing import Callable
 
 from spacy.language import Language
@@ -51,6 +52,8 @@ class DescriptiveIndices:
         if len(doc.text) == 0:
             raise ValueError("The text is empty.")
 
+        start = time()
+
         doc._.descriptive_indices["DESPC"] = doc._.paragraph_count
         doc._.descriptive_indices["DESPCi"] = self._incidence * (
             doc._.paragraph_count / doc._.alpha_words_count
@@ -74,6 +77,8 @@ class DescriptiveIndices:
         self.__get_length_of_words(doc)
         self.__get_length_of_words_no_stopwords(doc)
         self.__get_length_of_lemmas(doc)
+
+        print(f"Descriptive indices calculation took {time() - start} seconds.")
 
         return doc
 
@@ -100,10 +105,10 @@ class DescriptiveIndices:
             stat_results = StatisticsResults()
             # Calculate the statistics
             if statistic_type in ["std", "all"]:
-                stat_results.std = statistics.pstdev(counter)
+                stat_results.std = statistics.pstdev(counter) if len(counter) > 0 else 0
 
             if statistic_type in ["mean", "all"]:
-                stat_results.mean = statistics.mean(counter)
+                stat_results.mean = statistics.mean(counter) if len(counter) > 0 else 0
 
             return stat_results
 
@@ -283,8 +288,6 @@ class DescriptiveIndices:
             for token in doc._.content_words
             if token._.syllables is not None
         ]
-
-        print(doc._.content_words)
 
         metrics = self._get_mean_std_of_metric(
             doc, counter_function=count_syllables_per_word, statistic_type="all"

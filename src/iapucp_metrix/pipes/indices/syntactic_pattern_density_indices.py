@@ -50,6 +50,7 @@ class SyntacticPatternDensityIndices:
         if len(doc.text) == 0:
             raise ValueError("The text is empty.")
 
+        start = time()
         doc._.syntactic_pattern_density_indices["DRNP"] = (
             self.__get_noun_phrase_density(doc)
         )
@@ -71,6 +72,7 @@ class SyntacticPatternDensityIndices:
         doc._.syntactic_pattern_density_indices["DRSCONJ"] = (
             self.__get_subordinating_conjunctions_density(doc)
         )
+        print(f"Syntactic pattern density indices calculation took {time() - start} seconds.")
 
         return doc
 

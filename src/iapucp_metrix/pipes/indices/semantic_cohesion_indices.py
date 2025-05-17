@@ -1,5 +1,6 @@
 from importlib.resources import files
 from itertools import tee
+from time import time
 
 from spacy.language import Language
 from spacy.tokens import Doc, Span
@@ -56,10 +57,12 @@ class SemanticCohesionIndices:
         if len(doc.text) == 0:
             raise ValueError("The text is empty.")
 
+        start = time()
         self._get_lsa_overlap_adjacent_sentences(doc)
         self._get_lsa_overlap_all_sentences(doc)
         self._get_lsa_overlap_adjacent_paragraphs(doc)
         self._get_lsa_overlap_given_new_sentences(doc)
+        print(f"Semantic cohesion indices calculation took {time() - start} seconds.")
 
         return doc
 

@@ -1,7 +1,7 @@
 import math
+from time import time
 from collections import Counter
 from math import sqrt
-from time import time
 
 from spacy.language import Language
 from spacy.tokens import Doc
@@ -48,6 +48,8 @@ class ReadabilityIndices:
         if len(doc.text) == 0:
             raise ValueError("The text is empty.")
 
+        start = time()
+
         doc._.readability_indices["RDFHGL"] = (
             self.__calculate_fernandez_huertas_grade_level(doc)
         )
@@ -59,6 +61,8 @@ class ReadabilityIndices:
         doc._.readability_indices["RDFOG"] = self.__calculate_gunning_fog(doc)
         doc._.readability_indices["RDHS"] = self.__calculate_honore_statistic(doc)
         doc._.readability_indices["RDBR"] = self.__calculate_brunet_index(doc)
+
+        print(f"Readability indices calculation took {time() - start} seconds.")
 
         return doc
 

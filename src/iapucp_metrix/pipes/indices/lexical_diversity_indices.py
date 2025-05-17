@@ -1,9 +1,9 @@
 import math
-import statistics
-from collections import Counter
+import random
 from time import time
 
-from more_itertools import chunked
+import numpy as np
+from scipy.optimize import curve_fit
 from spacy.language import Language
 from spacy.tokens import Doc
 
@@ -55,6 +55,7 @@ class LexicalDiversityIndices:
         if len(doc.text) == 0:
             raise ValueError("The text is empty.")
 
+        start = time()
         doc._.lexical_diversity_indices["LDTTRa"] = (
             self.__get_type_token_ratio_between_all_words(doc)
         )
@@ -100,13 +101,15 @@ class LexicalDiversityIndices:
         doc._.lexical_diversity_indices["LDTTRLifn"] = (
             self.__get_type_token_ratio_of_functional_words(doc)
         )
-        doc._.lexical_diversity_indices["LDMLTD"] = self.__calculate_mltd(doc)
+        doc._.lexical_diversity_indices["LDMLTD"] = self.__calculate_mtld(doc)
         doc._.lexical_diversity_indices["LDVOCd"] = self.__calculate_vocd(doc)
         doc._.lexical_diversity_indices["LDMaas"] = self.__calculate_maas(doc)
         doc._.lexical_diversity_indices["LDDno"] = self.__get_noun_density(doc)
         doc._.lexical_diversity_indices["LDDvb"] = self.__get_verb_density(doc)
         doc._.lexical_diversity_indices["LDDadv"] = self.__get_adverb_density(doc)
         doc._.lexical_diversity_indices["LDDadj"] = self.__get_adjective_density(doc)
+
+        print(f"Lexical diversity indices calculation took {time() - start} seconds.")
 
         return doc
 
@@ -124,23 +127,45 @@ class LexicalDiversityIndices:
         v = doc._.alpha_words_different_count
         return 0 if v == 1 else (math.log10(n) - math.log10(v)) / math.log10(v) ** 2
 
-    def __calculate_mltd(self, doc: Doc) -> float:
+    def __calculate_mtld(self, doc: Doc) -> float:
         """
-        This method return the Measure of Textual Lexical Diversity (MLTD) of a text.
+        This method return the Measure of Textual Lexical Diversity (MTLD) of a text.
 
         Parameters:
         doc(Doc): The text to be anaylized.
 
         Returns:
-        float: The Measure of Textual Lexical Diversity (MLTD) of a text.
+        float: The Measure of Textual Lexical Diversity (MTLD) of a text.
         """
-        segments = [
-            words for words in chunked(doc._.alpha_words, self._mltd_segment_size)
-        ]
-        unique_words = [
-            len(set([word.text.lower() for word in words])) for words in segments
-        ]
-        return doc._.alpha_words_count / statistics.mean(unique_words)
+
+        tokens = [word.text.lower() for word in doc._.alpha_words]
+        total_tokens = doc._.alpha_words_count
+
+        def mtld_pass(tokens, threshold=0.72):
+            seg_count = 0
+            token_count = 0
+            types = set()
+
+            for tok in tokens:
+                token_count += 1
+                types.add(tok)
+                ttr = len(types) / token_count
+                if ttr <= threshold:
+                    seg_count += 1
+                    types.clear()
+                    token_count = 0
+
+            # handle the final partial segment
+            if token_count > 0:
+                ttr = len(types) / token_count
+                remainder = (1 - ttr) / (1 - threshold)
+                seg_count += remainder
+
+            return total_tokens / seg_count if seg_count else 0
+
+        forward = mtld_pass(tokens)
+        backward = mtld_pass(list(reversed(tokens)))
+        return (forward + backward) / 2
 
     def __calculate_vocd(self, doc: Doc) -> float:
         """
@@ -152,14 +177,32 @@ class LexicalDiversityIndices:
         Returns:
         float: The Vocabulary Complexity Diversity (VoCD) of a text.
         """
-        freq_counter = Counter()
-        for unique_word in doc._.alpha_words_different:
-            for word in doc._.alpha_words:
-                freq_counter[word.text.lower()] += 1
+        n_iterations = 3
+        n_min = 36
+        n_max = 50
+        tokens = [word.text.lower() for word in doc._.alpha_words]
 
-        return doc._.alpha_words_count**2 / sum(
-            [count**2 for count in freq_counter.values()]
-        )
+        if len(tokens) < n_max:
+            return 0
+
+        def ttr_model(N, D):
+            return (D / N) * (np.sqrt(1 + 2 * (N / D)) - 1)
+
+        def ttr_mean(n_tokens: int, samples=100):
+            ttrs = []
+            for _ in range(samples):
+                sample = random.sample(tokens, n_tokens)
+                ttrs.append(len(set(sample)) / n_tokens)
+            return float(np.mean(ttrs))
+
+        fitted_d = []
+        for _ in range(n_iterations):
+            n_tokens = list(range(n_min, n_max + 1))
+            ttrs = [ttr_mean(n) for n in n_tokens]
+            popt, _ = curve_fit(ttr_model, n_tokens, ttrs)
+            fitted_d.append(popt[0])
+
+        return float(np.mean(fitted_d))
 
     def __get_type_token_ratio_between_all_words(self, doc: Doc) -> float:
         """
@@ -422,7 +465,9 @@ class LexicalDiversityIndices:
         float: The type token ratio between the content words of a text.
         """
         return (
-            0 if doc._.nouns_count == 0 else doc._.nouns_count / doc._.alpha_words_count
+            0
+            if doc._.alpha_words_count == 0
+            else doc._.nouns_count / doc._.alpha_words_count
         )
 
     def __get_verb_density(self, doc: Doc) -> float:
@@ -437,7 +482,7 @@ class LexicalDiversityIndices:
         """
         return (
             0
-            if doc._.verbs_count == 0
+            if doc._.content_words_count == 0
             else doc._.verbs_count / doc._.content_words_count
         )
 
@@ -453,7 +498,7 @@ class LexicalDiversityIndices:
         """
         return (
             0
-            if doc._.adverbs_count == 0
+            if doc._.content_words_count == 0
             else doc._.adverbs_count / doc._.content_words_count
         )
 
@@ -469,6 +514,6 @@ class LexicalDiversityIndices:
         """
         return (
             0
-            if doc._.adjectives_count == 0
+            if doc._.content_words_count == 0
             else doc._.adjectives_count / doc._.content_words_count
         )
