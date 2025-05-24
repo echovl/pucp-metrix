@@ -184,7 +184,7 @@ class LexicalDiversityIndices:
             return 0
 
         def ttr_model(N, D):
-            return (D / N) * (np.sqrt(1 + 2 * (N / D)) - 1)
+            return (D / N) * (np.sqrt(1 + 2 * (N / D)) - 1) if D > 0 else 0
 
         def ttr_mean(n_tokens: int, samples=100):
             ttrs = []
