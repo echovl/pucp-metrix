@@ -48,34 +48,72 @@ class WordInformationIndices:
             raise ValueError("The text is empty.")
 
         start = time()
+        doc._.word_information_indices["WRDCONT"] = self.__get_content_word_incidence(
+            doc
+        )
+        doc._.word_information_indices["WRDCONTc"] = doc._.content_words_count
         doc._.word_information_indices["WRDNOUN"] = self.__get_noun_incidence(doc)
+        doc._.word_information_indices["WRDNOUNc"] = doc._.nouns_count
         doc._.word_information_indices["WRDVERB"] = self.__get_verb_incidence(doc)
+        doc._.word_information_indices["WRDVERBc"] = doc._.verbs_count
         doc._.word_information_indices["WRDADJ"] = self.__get_adjective_incidence(doc)
+        doc._.word_information_indices["WRDADJc"] = doc._.adjectives_count
         doc._.word_information_indices["WRDADV"] = self.__get_adverb_incidence(doc)
+        doc._.word_information_indices["WRDADVc"] = doc._.adverbs_count
         doc._.word_information_indices["WRDPRO"] = (
             self.__get_personal_pronoun_incidence(doc)
         )
+        doc._.word_information_indices["WRDPROc"] = doc._.pronouns_count
         doc._.word_information_indices["WRDPRP1s"] = (
             self.__get_personal_pronoun_first_person_singular_form_incidence(doc)
+        )
+        doc._.word_information_indices["WRDPRP1sc"] = (
+            doc._.pronouns_singular_first_person_count
         )
         doc._.word_information_indices["WRDPRP1p"] = (
             self.__get_personal_pronoun_first_person_plural_form_incidence(doc)
         )
+        doc._.word_information_indices["WRDPRP1pc"] = (
+            doc._.pronouns_plural_first_person_count
+        )
         doc._.word_information_indices["WRDPRP2s"] = (
             self.__get_personal_pronoun_second_person_singular_form_incidence(doc)
+        )
+        doc._.word_information_indices["WRDPRP2sc"] = (
+            doc._.pronouns_singular_second_person_count
         )
         doc._.word_information_indices["WRDPRP2p"] = (
             self.__get_personal_pronoun_second_person_plural_form_incidence(doc)
         )
+        doc._.word_information_indices["WRDPRP2pc"] = (
+            doc._.pronouns_plural_second_person_count
+        )
         doc._.word_information_indices["WRDPRP3s"] = (
             self.__get_personal_pronoun_third_person_singular_form_incidence(doc)
+        )
+        doc._.word_information_indices["WRDPRP3sc"] = (
+            doc._.pronouns_singular_third_person_count
         )
         doc._.word_information_indices["WRDPRP3p"] = (
             self.__get_personal_pronoun_third_person_plural_form_incidence(doc)
         )
-        print(f"Word information indices calculation took {time() - start} seconds.")
+        doc._.word_information_indices["WRDPRP3pc"] = (
+            doc._.pronouns_plural_third_person_count
+        )
 
         return doc
+
+    def __get_content_word_incidence(self, doc: Doc) -> float:
+        """
+        This method calculates the incidence of content words in a text per {self._incidence} words.
+
+        Parameters:
+        doc(Doc): The text to be analyzed.
+
+        Returns:
+        float: The incidence of content words per {self._incidence} words.
+        """
+        return (doc._.content_words_count / doc._.alpha_words_count) * self._incidence
 
     def __get_noun_incidence(self, doc: Doc) -> float:
         """

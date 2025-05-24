@@ -86,8 +86,6 @@ class WordFrequencyIndices:
             self.__get_mean_of_rarest_content_words_frequency_per_sentence(doc)
         )
 
-        print(f"Word frequency indices calculation took {time() - start} seconds.")
-
         return doc
 
     def __get_rare_nouns_count(self, doc: Doc) -> (float, float):

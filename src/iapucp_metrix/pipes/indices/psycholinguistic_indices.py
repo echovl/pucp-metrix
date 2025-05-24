@@ -1,5 +1,6 @@
-from spacy.language import Language
 from time import time
+
+from spacy.language import Language
 from spacy.tokens import Doc
 
 from iapucp_metrix.utils.psycholinguistic import PSY_BANK
@@ -174,7 +175,5 @@ class PsycholinguisticIndices:
         doc._.psycholinguistic_indices["PSYVAL3"] = get_psycholinguistic_ratio(
             doc, "valence", 7, 9
         )
-
-        print(f"Psycholinguistic indices calculation took {time() - start} seconds.")
 
         return doc

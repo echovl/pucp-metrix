@@ -109,8 +109,6 @@ class LexicalDiversityIndices:
         doc._.lexical_diversity_indices["LDDadv"] = self.__get_adverb_density(doc)
         doc._.lexical_diversity_indices["LDDadj"] = self.__get_adjective_density(doc)
 
-        print(f"Lexical diversity indices calculation took {time() - start} seconds.")
-
         return doc
 
     def __calculate_maas(self, doc: Doc) -> float:

@@ -1,6 +1,6 @@
 import statistics
-from time import time
 from itertools import combinations, tee
+from time import time
 from typing import Callable, Dict, Iterator, List, Tuple
 
 from spacy.language import Language
@@ -105,7 +105,6 @@ class ReferentialCohesionIndices:
         start = time()
         self.__get_overlap_adjacent_sentences(doc)
         self.__get_overlap_all_sentences(doc)
-        print(f"Referential cohesion indices calculation took {time() - start} seconds.")
 
         return doc
 

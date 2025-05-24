@@ -55,17 +55,24 @@ class DescriptiveIndices:
         start = time()
 
         doc._.descriptive_indices["DESPC"] = doc._.paragraph_count
-        doc._.descriptive_indices["DESPCi"] = self._incidence * (
-            doc._.paragraph_count / doc._.alpha_words_count
+        doc._.descriptive_indices["DESPCi"] = (
+            self._incidence * (doc._.paragraph_count / doc._.alpha_words_count)
+            if doc._.alpha_words_count > 0
+            else 0
         )
         doc._.descriptive_indices["DESSC"] = doc._.sentence_count
-        doc._.descriptive_indices["DESSCi"] = self._incidence * (
-            doc._.sentence_count / doc._.alpha_words_count
+        doc._.descriptive_indices["DESSCi"] = (
+            self._incidence * (doc._.sentence_count / doc._.alpha_words_count)
+            if doc._.alpha_words_count > 0
+            else 0
         )
         doc._.descriptive_indices["DESWC"] = doc._.alpha_words_count
         doc._.descriptive_indices["DESWCU"] = doc._.alpha_words_different_count
-        doc._.descriptive_indices["DESWCUi"] = self._incidence * (
-            doc._.alpha_words_different_count / doc._.alpha_words_count
+        doc._.descriptive_indices["DESWCUi"] = (
+            self._incidence
+            * (doc._.alpha_words_different_count / doc._.alpha_words_count)
+            if doc._.alpha_words_count > 0
+            else 0
         )
         self.__get_length_of_paragraphs(doc)
         self.__get_length_of_sentences(doc)
@@ -77,8 +84,6 @@ class DescriptiveIndices:
         self.__get_length_of_words(doc)
         self.__get_length_of_words_no_stopwords(doc)
         self.__get_length_of_lemmas(doc)
-
-        print(f"Descriptive indices calculation took {time() - start} seconds.")
 
         return doc
 

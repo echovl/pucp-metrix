@@ -54,25 +54,37 @@ class SyntacticPatternDensityIndices:
         doc._.syntactic_pattern_density_indices["DRNP"] = (
             self.__get_noun_phrase_density(doc)
         )
+        doc._.syntactic_pattern_density_indices["DRNPc"] = doc._.noun_phrases_count
         doc._.syntactic_pattern_density_indices["DRVP"] = (
             self.__get_verb_phrase_density(doc)
         )
+        doc._.syntactic_pattern_density_indices["DRVPc"] = doc._.verb_phrases_count
         doc._.syntactic_pattern_density_indices["DRNEG"] = (
             self.__get_negation_expressions_density(doc)
+        )
+        doc._.syntactic_pattern_density_indices["DRNEGc"] = (
+            doc._.negative_expressions_count
         )
         doc._.syntactic_pattern_density_indices["DRGER"] = (
             self.__get_gerund_forms_density(doc)
         )
+        doc._.syntactic_pattern_density_indices["DRGERc"] = doc._.gerunds_count
         doc._.syntactic_pattern_density_indices["DRINF"] = (
             self.__get_infinitive_forms_density(doc)
         )
+        doc._.syntactic_pattern_density_indices["DRINFc"] = doc._.infinitives_count
         doc._.syntactic_pattern_density_indices["DRCCONJ"] = (
             self.__get_coordinating_conjunctions_density(doc)
+        )
+        doc._.syntactic_pattern_density_indices["DRCCONJc"] = (
+            doc._.coordinating_conjunctions_count
         )
         doc._.syntactic_pattern_density_indices["DRSCONJ"] = (
             self.__get_subordinating_conjunctions_density(doc)
         )
-        print(f"Syntactic pattern density indices calculation took {time() - start} seconds.")
+        doc._.syntactic_pattern_density_indices["DRSCONJc"] = (
+            doc._.subordinating_conjunctions_count
+        )
 
         return doc
 

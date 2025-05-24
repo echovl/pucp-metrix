@@ -53,7 +53,6 @@ class TextualSimplicityIndices:
 
         start = time()
         self.__get_sentences_length_ratio(doc)
-        print(f"Textual simplicity indices calculation took {time() - start} seconds.")
         return doc
 
     def __get_sentences_length_ratio(self, doc: Doc) -> None:

@@ -62,7 +62,6 @@ class SemanticCohesionIndices:
         self._get_lsa_overlap_all_sentences(doc)
         self._get_lsa_overlap_adjacent_paragraphs(doc)
         self._get_lsa_overlap_given_new_sentences(doc)
-        print(f"Semantic cohesion indices calculation took {time() - start} seconds.")
 
         return doc
 

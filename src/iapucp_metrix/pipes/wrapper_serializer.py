@@ -20,7 +20,6 @@ class WrapperSerializer:
         """
         # Save all indices into a single dictionary
         doc_new = Doc.from_docs([doc], exclude=["user_data"])
-        print(f"Done processing doc {doc_new.text[:10]}...")
 
         doc_new._.coh_metrix_indices = {
             **doc._.descriptive_indices,

@@ -1,7 +1,7 @@
 import math
-from time import time
 from collections import Counter
 from math import sqrt
+from time import time
 
 from spacy.language import Language
 from spacy.tokens import Doc
@@ -62,8 +62,6 @@ class ReadabilityIndices:
         doc._.readability_indices["RDHS"] = self.__calculate_honore_statistic(doc)
         doc._.readability_indices["RDBR"] = self.__calculate_brunet_index(doc)
 
-        print(f"Readability indices calculation took {time() - start} seconds.")
-
         return doc
 
     def __calculate_fernandez_huertas_grade_level(self, doc: Doc) -> float:
@@ -97,7 +95,13 @@ class ReadabilityIndices:
         words_count = doc._.alpha_words_count
 
         return (
-            206.835 - 62.3 * syllable_count / words_count - words_count / sentence_count
+            (
+                206.835
+                - 62.3 * syllable_count / words_count
+                - words_count / sentence_count
+            )
+            if words_count > 0
+            else 0
         )
 
     def __calculate_brunet_index(self, doc: Doc) -> float:
@@ -113,7 +117,9 @@ class ReadabilityIndices:
         words_count = doc._.alpha_words_count
         unique_words_count = doc._.alpha_words_different_count
 
-        return words_count ** (unique_words_count**-0.165)
+        return (
+            words_count ** (unique_words_count**-0.165) if unique_words_count > 0 else 0
+        )
 
     def __calculate_honore_statistic(self, doc: Doc) -> float:
         """
@@ -190,6 +196,12 @@ class ReadabilityIndices:
         sentence_count = doc._.sentence_count
         polysyllabic_count = doc._.polysyllabic_words_count
 
-        return 0.4 * (
-            (words_count / sentence_count) + 100 * (polysyllabic_count / words_count)
+        return (
+            0.4
+            * (
+                (words_count / sentence_count)
+                + 100 * (polysyllabic_count / words_count)
+            )
+            if words_count > 0
+            else 0
         )
